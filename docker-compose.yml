@@ -1,0 +1,51 @@
+services:
+
+  nginx:
+    build:
+      context: ./docker/nginx
+    container_name: ${NG_DOCKER_HOST}
+    restart: unless-stopped
+    ports:
+      - ${NG_DOCKER_PORT}:${NG_DOCKER_PORT}
+    volumes:
+      - ./docker/nginx/log:/var/log/nginx
+      - ./:/var/www/html/
+    depends_on:
+      - django
+
+  django:
+    build:
+      context: docker/python
+    container_name: ${DJ_DOCKER_HOST}
+    restart: unless-stopped
+    environment:
+      DB_DOCKER_HOST: ${DB_DOCKER_HOST}
+      DB_DOCKER_NAME: ${DB_DOCKER_NAME}
+      DB_DOCKER_USER: ${DB_DOCKER_USER}
+      DB_DOCKER_PASS: ${DB_DOCKER_PASS}
+      DB_DOCKER_PORT: ${DB_DOCKER_PORT}
+    expose:
+      - ${DJ_DOCKER_PORT}:${DJ_DOCKER_PORT}
+    ports:
+      - ${DJ_DOCKER_PORT}:${DJ_DOCKER_PORT}
+    volumes:
+      - ./:/var/www/html/
+    depends_on:
+      - db
+
+  db:
+    build: ./docker/db
+    container_name: ${DB_DOCKER_HOST}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DOCKER_NAME}
+      POSTGRES_USER: ${DB_DOCKER_USER}
+      POSTGRES_PASSWORD: ${DB_DOCKER_PASS}
+      DB_HOME_SCHEMA_NAME: ${DB_DOCKER_NAME}
+    ports:
+      - ${DB_DOCKER_PORT}:${DB_DOCKER_PORT}
+    volumes:
+      - kearney-db:/var/lib/postgresql/data
+
+volumes:
+  kearney-db:

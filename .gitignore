@@ -1,0 +1,8 @@
+.idea
+.DS_Store
+package-lock.json
+helper.txt
+/node_modules
+/docker/nginx/log/*
+!/docker/nginx/log/.gitkeep
+data/gen.py

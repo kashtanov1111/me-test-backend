@@ -1,0 +1,42 @@
+upstream app {
+    server django:8000;
+}
+
+server {
+
+    listen 80;
+
+    location /api {
+        proxy_pass http://app;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_redirect off;
+    }
+
+    location / {
+        autoindex on;
+        index index.html;
+    }
+
+    location ~*\.css {
+        default_type text/css;
+    }
+
+    location ~*\.js {
+        default_type application/x-javascript;
+    }
+
+    location ~*\.(jpeg|gif|png|jpg|svg|mp4)$ {
+
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin *;
+        }
+        add_header Cache-control "public";
+        expires      90d;
+    }
+
+    location ~*\.(eot|ttf|woff|woff2|ico)$ {
+        add_header Access-Control-Allow-Origin *;
+    }
+
+}
