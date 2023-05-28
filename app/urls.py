@@ -18,6 +18,7 @@ from django.urls import path
 from . import api
 
 urlpatterns = [
-    path('api', api.from_response, name='form_response'),
-    path('api/<int:param_id>', api.api_response, name='api_response'),
+    path("admin/", admin.site.urls),
+    path("api", api.from_response, name="form_response"),
+    path("api/<int:param_id>/", api.api_response, name="api_response"),
 ]
